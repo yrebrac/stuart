@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""
+Stuart — Privilege Helper
+
+Runs pre-approved read-only commands as root. Installed to
+/usr/local/bin/stuart-privilege-helper and authorized via polkit.
+
+This script IS the whitelist. Only commands listed in COMMANDS can
+be executed. Users can add entries for their own needs.
+
+See stuart/docs/PRIVILEGES.md for details.
+"""
+
+import hashlib
+import subprocess
+import sys
+from pathlib import Path
+
+# ── Command whitelist ─────────────────────────────────────────────
+#
+# Format: "command-id": (["command", "args", ...], arg_type)
+#
+# arg_type:
+#   False    — no additional arguments accepted
+#   "device" — accepts one /dev/* path as final argument
+#   "iface"  — accepts one network interface name as final argument
+#
+# To add a command: add an entry here, then reinstall this file.
+# To remove a command: delete or comment out the entry.
+
+COMMANDS = {
+    # Block device — disk health, probing
+    "smartctl-scan":        (["smartctl", "--scan"],              False),
+    "smartctl-health":      (["smartctl", "-a"],                  "device"),
+    "nvme-list":            (["nvme", "list"],                    False),
+    "nvme-smart":           (["nvme", "smart-log"],               "device"),
+    "blkid-probe":          (["blkid", "-p"],                     "device"),
+
+    # Block device — LVM (read-only listing)
+    "pvs-list":             (["pvs", "--noheadings"],             False),
+    "vgs-list":             (["vgs", "--noheadings"],             False),
+    "lvs-list":             (["lvs", "--noheadings"],             False),
+
+    # Hardware — BIOS, firmware, board info
+    "dmidecode-system":     (["dmidecode", "-t", "system"],       False),
+    "dmidecode-baseboard":  (["dmidecode", "-t", "baseboard"],    False),
+    "dmidecode-bios":       (["dmidecode", "-t", "bios"],         False),
+    "dmidecode-memory":     (["dmidecode", "-t", "memory"],       False),
+
+    # Serial device — process listing on device nodes
+    "lsof-device":          (["lsof"],                            "device"),
+
+    # Network — sockets, firewall
+    "ss-processes":         (["ss", "-tulnp"],                    False),
+    "nft-list":             (["nft", "list", "ruleset"],          False),
+    "ethtool-info":         (["ethtool"],                         "iface"),
+    "ethtool-driver":       (["ethtool", "-i"],                   "iface"),
+
+    # Kernel — messages
+    "dmesg-recent":         (["dmesg", "--since", "-1h"],         False),
+    "dmesg-tail":           (["dmesg", "-T"],                     False),
+
+    # Packages — read-only queries
+    "dnf-check-update":     (["dnf5", "check-update", "--refresh"], False),
+
+    # ── Write/modify commands (disabled by default) ──────────────
+    # Uncomment to allow Stuart to perform these operations via polkit.
+    # These go beyond Stuart's read-only design — enable at your own risk.
+
+    # Systemd — service management
+    # "systemctl-start":    (["systemctl", "start"],              "unit"),
+    # "systemctl-stop":     (["systemctl", "stop"],               "unit"),
+    # "systemctl-restart":  (["systemctl", "restart"],            "unit"),
+    # "systemctl-reload":   (["systemctl", "daemon-reload"],      False),
+
+    # Firewall — rule management (HIGH RISK)
+    # "firewall-add-rule":  (["firewall-cmd", "--add-rich-rule"], "rule"),
+    # "firewall-reload":    (["firewall-cmd", "--reload"],        False),
+
+    # Packages — install/upgrade (HIGH RISK)
+    # "dnf-install":        (["dnf5", "install", "-y"],           "package"),
+    # "dnf-upgrade":        (["dnf5", "upgrade", "-y"],           False),
+}
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
+        print("Stuart privilege helper — pre-approved read-only commands")
+        print()
+        print("Usage: stuart-privilege-helper <command-id> [/dev/device]")
+        print()
+        print("Commands:")
+        for cmd_id in sorted(COMMANDS):
+            base_cmd, arg_type = COMMANDS[cmd_id]
+            suffix = {
+                "device": " <device>",
+                "iface": " <interface>",
+            }.get(arg_type, "")
+            print(f"  {cmd_id:<24s} {' '.join(base_cmd)}{suffix}")
+        sys.exit(0)
+
+    cmd_id = sys.argv[1]
+
+    # Built-in: report installed file hashes for status checking
+    if cmd_id == "check-status":
+        helper_path = Path("/usr/local/bin/stuart-privilege-helper")
+        policy_path = Path("/etc/polkit-1/rules.d/49-stuart.rules")
+        for label, path in [("helper", helper_path), ("policy", policy_path)]:
+            if path.is_file():
+                h = hashlib.sha256(path.read_bytes()).hexdigest()
+                print(f"{label}:{h}")
+            else:
+                print(f"{label}:missing")
+        sys.exit(0)
+
+    if cmd_id not in COMMANDS:
+        print(f"Error: unknown command '{cmd_id}'", file=sys.stderr)
+        print(f"Run '{sys.argv[0]} --help' for available commands",
+              file=sys.stderr)
+        sys.exit(1)
+
+    base_cmd, arg_type = COMMANDS[cmd_id]
+    cmd = list(base_cmd)
+
+    if arg_type == "device":
+        if len(sys.argv) < 3:
+            print(f"Error: '{cmd_id}' requires a device path argument",
+                  file=sys.stderr)
+            sys.exit(1)
+        device = sys.argv[2]
+        if not device.startswith("/dev/"):
+            print(f"Error: invalid device path '{device}' "
+                  f"(must start with /dev/)", file=sys.stderr)
+            sys.exit(1)
+        cmd.append(device)
+    elif arg_type == "iface":
+        if len(sys.argv) < 3:
+            print(f"Error: '{cmd_id}' requires an interface name argument",
+                  file=sys.stderr)
+            sys.exit(1)
+        iface = sys.argv[2]
+        # Interface names: alphanumeric, hyphens, dots, max 15 chars
+        import re
+        if not re.match(r'^[a-zA-Z0-9._-]{1,15}$', iface):
+            print(f"Error: invalid interface name '{iface}'",
+                  file=sys.stderr)
+            sys.exit(1)
+        cmd.append(iface)
+    elif len(sys.argv) > 2:
+        print(f"Error: '{cmd_id}' takes no additional arguments",
+              file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=60,
+        )
+    except FileNotFoundError:
+        print(f"Error: command not found: {cmd[0]}", file=sys.stderr)
+        sys.exit(127)
+    except subprocess.TimeoutExpired:
+        print(f"Error: command timed out after 60 seconds", file=sys.stderr)
+        sys.exit(124)
+
+    sys.stdout.write(result.stdout)
+    sys.stderr.write(result.stderr)
+    sys.exit(result.returncode)
+
+
+if __name__ == "__main__":
+    main()

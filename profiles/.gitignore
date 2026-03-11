@@ -1,0 +1,3 @@
+# Profile data is user-specific — do not commit
+*
+!.gitignore

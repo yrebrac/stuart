@@ -1,0 +1,12 @@
+{
+    "name": "stuart",
+    "version": "1.0.0",
+    "description": "Sysops team leader plugin — Linux administration with specialist sub-agents",
+    "author": {
+        "name": "Ben Carbery",
+        "url": "https://github.com/yrebrac"
+    },
+    "repository": "https://github.com/yrebrac/stuart",
+    "license": "MIT",
+    "keywords": ["sysops", "linux", "systemd", "sysadmin", "networking", "storage", "containers", "docker", "podman"]
+}

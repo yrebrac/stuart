@@ -1,0 +1,44 @@
+{
+    "mcpServers": {
+        "journald": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/journald_mcp.py"]
+        },
+        "systemd": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/systemd_mcp.py"]
+        },
+        "block-device": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/block-device_mcp.py"]
+        },
+        "syslog": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/syslog_mcp.py"]
+        },
+        "serial-device": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/serial-device_mcp.py"]
+        },
+        "container": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/container/container_mcp.py"]
+        },
+        "network": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/network_mcp.py"]
+        },
+        "virtual": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/virtual_mcp.py"]
+        },
+        "packages": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/packages_mcp.py"]
+        },
+        "performance": {
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/servers/linux/performance_mcp.py"]
+        }
+    }
+}

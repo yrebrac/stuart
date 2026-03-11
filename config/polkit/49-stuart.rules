@@ -1,0 +1,28 @@
+// Stuart — Polkit rules for automated privilege escalation
+//
+// Authorizes the Stuart privilege helper for wheel group members
+// on active local sessions. The helper itself controls which
+// commands are allowed (sub-command whitelist).
+//
+// Install:
+//   sudo cp stuart/config/polkit/stuart-privilege-helper /usr/local/bin/
+//   sudo chmod 755 /usr/local/bin/stuart-privilege-helper
+//   sudo cp stuart/config/polkit/49-stuart.rules /etc/polkit-1/rules.d/
+//   sudo chmod 644 /etc/polkit-1/rules.d/49-stuart.rules
+//
+// Requires: polkit >= 0.106, wheel group membership
+// See: stuart/docs/PRIVILEGES.md
+
+polkit.addRule(function(action, subject) {
+    if (action.id !== "org.freedesktop.policykit.exec") {
+        return polkit.Result.NOT_HANDLED;
+    }
+    if (!subject.active || !subject.local || !subject.isInGroup("wheel")) {
+        return polkit.Result.NOT_HANDLED;
+    }
+    if (action.lookup("program") === "/usr/local/bin/stuart-privilege-helper") {
+        polkit.log("stuart: privilege helper authorized for " + subject.user);
+        return polkit.Result.YES;
+    }
+    return polkit.Result.NOT_HANDLED;
+});

@@ -1,0 +1,27 @@
+{
+    "name": "stuart",
+    "owner": {
+        "name": "Ben Carbery",
+        "email": "yrebrac@upaya.net.au"
+    },
+    "metadata": {
+        "description": "Claude Code Marketplace for the Stuart plugin"
+    },
+    "plugins": [
+        {
+            "name": "stuart",
+            "description": "Stuart is your own personal sysadmin, with training and expertise across many Linux knowledge domains",
+            "source": {
+                "source": "github",
+                "repo": "yrebrac/stuart"
+            },
+            "author": {
+                "name": "Ben Carbery",
+                "email": "yrebrac@upaya.net.au"
+            },
+            "repository": "https://github.com/yrebrac/stuart",
+            "license": "MIT",
+            "keywords": ["sysops", "linux", "systemd", "sysadmin", "networking", "storage", "containers", "docker", "podman"]
+        }
+    ]
+}

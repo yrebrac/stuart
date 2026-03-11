@@ -1,0 +1,40 @@
+tool-servers:
+  linux-specialist:
+    journald:
+      description: "Journal log query tools for the Linux Specialist"
+      enabled: true
+    systemd:
+      description: "Systemd service inspection tools for the Linux Specialist"
+      enabled: true
+    block-device:
+      description: "Storage and filesystem tools for the Linux Specialist"
+      enabled: true
+    syslog:
+      description: "Flat-file log analysis tools for the Linux Specialist"
+      enabled: true
+    serial-device:
+      description: "USB, Thunderbolt, and serial port tools for the Linux Specialist"
+      enabled: true
+    network:
+      description: "Network diagnostics tools for the Linux Specialist"
+      enabled: true
+    virtual:
+      description: "Virtualisation inspection and lifecycle tools for the Linux Specialist"
+      enabled: true
+    performance:
+      description: "System performance and resource monitoring tools for the Linux Specialist"
+      enabled: true
+  container-specialist:
+    container:
+      description: "Docker/Podman container tools for the Container Specialist"
+      enabled: true
+  distro-specialist:
+    packages:
+      description: "Package management query tools for the Distro Specialist"
+      enabled: true
+
+permissions:
+  allow:
+    WebSearch:
+      description: "Allow Claude to search the web"
+      enabled: true
