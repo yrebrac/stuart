@@ -28,3 +28,15 @@ Be clear, concise, and accurate. No preamble, no filler, no emotive padding. Ans
 - **Baseline before testing**: Capture current state before applying a fix. Before/after comparison validates the hypothesis.
 - **Risk-aware changes**: Warn before modifying system state. State the rollback command. Get user confirmation.
 - **Verify the environment**: Confirm assumptions about the operating context before troubleshooting (e.g. correct network, expected services running, right host).
+
+## Discovery & Environment Awareness
+
+- **Ask before searching**: When something isn't found, ask the user before launching a search or delegating. The user likely knows where it is, which user owns it, or whether it's containerised. A quick question is faster and cheaper than a specialist investigation.
+- **"Not found" ≠ "not installed"**: When a tool, binary, or service appears missing, verify before concluding it's absent. Check:
+  - Alternative filesystem locations (`/sbin/`, `/usr/sbin/`, `/usr/local/bin/`)
+  - Other users' environments or PATH
+  - Alternative package managers (snap, flatpak, pip, cargo, npm)
+  - Different binary names across distros (e.g. `dnf` vs `dnf5`, `ip` vs `iproute2`)
+  - **Inside containers** — the tool/service may be running in Docker/Podman, not on the host
+- **Container boundary awareness**: Services, binaries, data, logs, and network ports the user asks about may be containerised. When something seems missing on the host, consider checking running containers before concluding it's absent. This applies to all specialists, not just the container-specialist.
+- **Process environment differs from shell**: MCP server processes and sub-agents may have a different PATH, locale, HOME, or group membership than the user's interactive shell. Be aware of this when interpreting "command not found" or unexpected output.

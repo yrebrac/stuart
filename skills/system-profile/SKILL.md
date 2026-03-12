@@ -52,9 +52,11 @@ Read profiles from `${CLAUDE_PLUGIN_ROOT}/profiles/`:
 1. Call `tool_info()` on each active MCP server (all 9 — see Gathering Strategy)
 2. Collect tools where `exists: false`
 3. For missing tools, look up the providing package via `search_provider("<tool>")` from the packages server
-4. Present a table: server, tool, status, package, install command
-5. Optionally write results to `toolchain.yaml`
-6. For the full audit procedure, read REFERENCE.md in this skill directory
+4. Check `_privilege` in any tool_info response — report whether privilege escalation is working, partially set up, or not configured
+5. Present a table: server, tool, status, package, install command
+6. If privilege is not set up, include a note suggesting `/setup check-privileges`
+7. Optionally write results to `toolchain.yaml`
+8. For the full audit procedure, read REFERENCE.md in this skill directory
 
 ### "Pass context to specialist"
 

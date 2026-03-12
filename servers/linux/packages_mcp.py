@@ -53,6 +53,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from privilege import PrivilegeHelper
 from tool_check import ToolCache
 
+_priv = PrivilegeHelper()
+
 server = FastMCP(
     name="sysops-packages",
     instructions=(
@@ -328,8 +330,7 @@ class _DnfBackend(_PackageBackend):
     def check_updates(self, security_only: bool, max_lines: int) -> str:
         # Try privilege helper first for clean root access
         if not security_only:
-            priv = PrivilegeHelper()
-            result = priv.run_privileged("dnf-check-update", timeout=60)
+            result = _priv.run_privileged("dnf-check-update", timeout=60)
             if result.returncode not in (126, 127):
                 # Helper worked (0=no updates, 100=updates available)
                 output = result.stdout or result.stderr or "(no output)"
@@ -452,7 +453,11 @@ def _run_cmd(
 
     if result.returncode != 0:
         if "Permission denied" in stderr or "Operation not permitted" in stderr:
-            return f"Permission denied. May require sudo.\n\nstderr: {stderr}"
+            return (
+                f"Permission denied running {cmd[0]}.\n\n"
+                f"{_priv.format_sudo_hint(cmd)}\n\n"
+                f"stderr: {stderr}"
+            )
         # dnf check-update returns 100 when updates are available
         if result.returncode == 100 and output.strip():
             pass  # Not an error — updates available
@@ -579,6 +584,7 @@ def tool_info() -> str:
             "version": info.get("version_raw"),
         }
 
+    result["_privilege"] = _priv.policy_status()
     return json.dumps(result, indent=2)
 
 

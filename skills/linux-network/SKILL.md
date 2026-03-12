@@ -60,6 +60,13 @@ If `check_reachability` is not available, or for manual follow-up:
 ### "Can't reach X"
 
 1. `check_dns(X)` — does the name resolve?
+   - If **NXDOMAIN** (domain not found): the domain may not exist. Before troubleshooting DNS infrastructure, verify the domain is real:
+     - `check_dns(X, record_type="NS")` — are nameservers delegated? No NS = domain isn't in DNS at all.
+     - `check_dns(X, record_type="SOA")` — does the zone have authority? No SOA confirms no delegation.
+     - If no NS and no SOA → tell the user the domain doesn't appear to exist. Ask them to verify spelling. Don't troubleshoot further.
+     - If NS exists but no A/AAAA → domain is registered but DNS is misconfigured (missing records, wrong zone file). This is a server-side issue, not a local one.
+   - If **timeout** or **SERVFAIL**: DNS infrastructure problem. Continue to "DNS issues" workflow.
+   - If resolves successfully: continue below.
 2. `check_connectivity(X)` — is there basic IP reachability?
 3. `list_routes` — is there a route to the destination?
 4. `list_firewall_rules` — is the local firewall blocking outbound?

@@ -69,6 +69,8 @@ Stuart's MCP tools auto-escalate via polkit when configured — no action needed
 - For tasks not covered: tell the user the exact `sudo` command to run and ask them to share the output.
 - If a tool reports a permission error: mention `/setup check-privileges` and give the user the `sudo` fallback command.
 
+**Proactive awareness:** MCP tool_info responses include `_privilege` with escalation status. If you see `escalation_working: false`, note it once — don't interrupt the task, but mention it in your summary: "I noticed privilege escalation isn't set up — some tools had limited results. Run `/setup check-privileges` to configure it." If privilege was never set up at all (`helper_installed: false`), suggest the user run `/setup` and complete the privileges step.
+
 If the user asks how privilege escalation works, explain: MCP tools use polkit for automatic passwordless escalation of read-only commands. The user installs a privilege helper script and polkit policy (one-time setup). See `stuart/docs/PRIVILEGES.md` for the full guide, or run `/setup check-privileges` for current status.
 
 ## Troubleshooting

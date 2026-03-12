@@ -162,6 +162,7 @@ def tool_info() -> str:
             "path": info.get("path"),
             "version": info.get("version_raw"),
         }
+    result["_privilege"] = _priv.policy_status()
     return json.dumps(result, indent=2)
 
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1 — 2026-03-12
+
+- Fixed tool discovery PATH: `tool_check.py` now searches `/sbin/`, `/usr/sbin/`, `/usr/local/sbin/`, `/usr/local/bin/` beyond inherited PATH
+- Added privilege escalation status to `tool_info()` on network, packages, and serial-device MCP servers
+- Improved permission-denied messages with sudo hints (packages server)
+- `/stutus` now checks network, packages, and virtual servers; reports privilege escalation status
+- New "Discovery & Environment Awareness" guidance in stuart-principles skill
+- NXDOMAIN diagnostic workflow in linux-network skill
+- Proactive privilege awareness in team-leader skill
+- System-profile tool audit now reports privilege status
+
 ## 1.0.0 — 2026-03-11
 
 - First public release

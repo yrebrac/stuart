@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet)](https://github.com/yrebrac/stuart)
-[![Version](https://img.shields.io/badge/version-1.0.0-green)](https://github.com/yrebrac/stuart)
+[![Version](https://img.shields.io/badge/version-1.0.1-green)](https://github.com/yrebrac/stuart)
 
 Debugging a production issue means juggling journalctl, systemctl, docker logs, smartctl, and dmesg across multiple terminals — all while trying to remember the right flags. Stuart gives you a team that already knows where to look.
 

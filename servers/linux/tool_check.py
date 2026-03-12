@@ -20,6 +20,16 @@ from pathlib import Path
 CACHE_DIR = Path.home() / ".cache" / "stuart" / "tools"
 CACHE_MAX_AGE_DAYS = 30
 
+# Additional paths to search for tools beyond the inherited PATH.
+# MCP server processes often inherit a restricted PATH that excludes
+# sbin directories where many admin tools live (especially on RHEL-family).
+_EXTRA_SEARCH_PATHS = [
+    "/sbin",
+    "/usr/sbin",
+    "/usr/local/sbin",
+    "/usr/local/bin",
+]
+
 
 class ToolCache:
     """Discovers and caches metadata for a wrapped Linux command.
@@ -69,9 +79,30 @@ class ToolCache:
         else:
             self._data = loaded
 
+    @staticmethod
+    def _which_extended(name: str) -> str | None:
+        """Find a command, searching the inherited PATH plus _EXTRA_SEARCH_PATHS.
+
+        shutil.which() only searches os.environ["PATH"]. On many distros
+        (especially RHEL-family), admin tools live in /sbin/ or /usr/sbin/
+        which are not on PATH for non-root users or non-login shells.
+        """
+        # Try the normal PATH first
+        resolved = shutil.which(name)
+        if resolved:
+            return resolved
+
+        # Search additional paths
+        for extra_dir in _EXTRA_SEARCH_PATHS:
+            candidate = os.path.join(extra_dir, os.path.basename(name))
+            if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+                return candidate
+
+        return None
+
     def discover(self) -> dict:
         """Run discovery checks and update cache. Returns the cache dict."""
-        resolved = shutil.which(self.tool_path)
+        resolved = self._which_extended(self.tool_path)
         exists = resolved is not None
 
         if not exists:
