@@ -1,14 +1,14 @@
 # Stuart
 
-**Your AI sysops team leader for Linux and container administration.**
+**A plugin that turns Claude Code into an effective sysadmin for a local Linux system**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet)](https://github.com/yrebrac/stuart)
-[![Version](https://img.shields.io/badge/version-1.0.1-green)](https://github.com/yrebrac/stuart)
+[![Version](https://img.shields.io/badge/version-1.1.0-green)](https://github.com/yrebrac/stuart)
 
 Debugging a production issue means juggling journalctl, systemctl, docker logs, smartctl, and dmesg across multiple terminals — all while trying to remember the right flags. Stuart gives you a team that already knows where to look.
 
-Stuart is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that transforms Claude into **Stu**, a sysops team leader with specialist [sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents). Stu triages your request, delegates to the right specialist, and presents clear, actionable findings — not raw command dumps.
+Stuart is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that transforms Claude into **Stu**, a sysadmin with domain [skills](https://docs.anthropic.com/en/docs/claude-code/skills) and 120 purpose-built [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). Stu triages your request, loads the right domain knowledge, investigates using structured tools, and presents clear, actionable findings — not raw command dumps.
 
 <!-- TODO: asciinema demo here -->
 
@@ -140,7 +140,7 @@ Stuart has **120 [MCP](https://docs.anthropic.com/en/docs/claude-code/mcp) tools
 | **Virtualisation** | virtual | 15 | KVM/QEMU VMs, disk images, storage pools, networks, snapshots |
 | **Containers** | container | 17 | Docker/Podman lifecycle, images, volumes, logs, compose stacks |
 
-Three specialist [sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) handle domain-specific investigations. Stu delegates to them when deeper analysis is needed and presents the results.
+Domain [skills](https://docs.anthropic.com/en/docs/claude-code/skills) encode diagnostic workflows, tool selection matrices, and troubleshooting patterns for each domain. Stu loads the right skill for the task and uses MCP tools directly — no delegation overhead.
 
 **Beyond the tools:** Stu also has the full knowledge of Anthropic's Claude models. The MCP tools give him fast, structured access to your system — but he can reason about Linux, networking, storage, and containers well beyond what the tools cover. If he doesn't have a tool for something, he'll often know the right approach anyway.
 
@@ -208,7 +208,7 @@ For full details: [docs/SECURITY.md](docs/SECURITY.md)
 
 Transparency builds trust. Here's what to expect:
 
-- **Delegation speed**: When Stu delegates to a specialist, round-trips take 30 seconds to several minutes depending on complexity. Stu often handles simple queries directly for speed.
+- **Skill loading**: Stu loads domain skills for investigation tasks. This adds a small token overhead but ensures he uses the right tools and follows proven diagnostic patterns.
 - **Bash fallback**: Occasionally Stu falls back to shell commands when MCP tools don't cover a specific query. You'll be prompted to approve each one.
 - **Hallucinated CLI flags**: Like any LLM, Stu can invent flags that don't exist (e.g. `podman pull --dry-run`). The MCP tools prevent this for covered domains, but Bash fallback doesn't have that guardrail.
 - **No remote system support**: Stuart operates on the local machine only. Remote/SSH-based administration is planned for a future release.
@@ -223,7 +223,7 @@ You can — Claude Code is already useful for sysadmin tasks. Stuart adds:
 - **120 purpose-built MCP tools** that return structured data instead of parsing shell output
 - **Domain knowledge** via [skills](https://docs.anthropic.com/en/docs/claude-code/skills) that encode diagnostic workflows, tool selection matrices, and troubleshooting patterns
 - **Tuned behaviour**: Stu's responses have been guided and refined for sysops work — he's methodical, clear, opinionated when it matters, and honest about uncertainty
-- **A team metaphor** that naturally organises complex investigations across multiple domains
+- **Multi-domain reach** that naturally covers complex investigations spanning storage, services, networking, and containers
 - **Auto-approved tooling** so you're not clicking "Allow" on every query
 - **Read-only safety** enforced at the tool level, not just by prompt instructions
 

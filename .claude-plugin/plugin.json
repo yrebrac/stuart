@@ -1,7 +1,7 @@
 {
     "name": "stuart",
-    "version": "1.0.1",
-    "description": "Sysops team leader plugin — Linux administration with specialist sub-agents",
+    "version": "1.1.0",
+    "description": "Sysops plugin — Linux administration with domain skills and MCP tools",
     "author": {
         "name": "Ben Carbery",
         "url": "https://github.com/yrebrac"

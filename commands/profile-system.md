@@ -14,7 +14,7 @@ allowed-tools:
     - "mcp__plugin_stuart_packages__*"
 ---
 
-Load the `system-profile` skill, then handle the user's request.
+Read `system-profile-rules.md` in the `linux-sysadmin` skill directory, then handle the user's request.
 
 ## With arguments
 

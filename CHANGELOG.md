@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0 — 2026-03-16
+
+- **Architecture: skills-first, no sub-agents.** Removed sub-agent delegation entirely. Stu loads domain skills and uses MCP tools directly. Eval data showed sub-agents fail to use MCP tools >60% of the time, falling back to Bash at 2-21x cost.
+- **Architecture: single skill with domain rules files.** Consolidated 9 separate skills into one `linux-sysadmin` skill with per-domain rules files. Skill loads once, rules files read on demand per routing table. Tested at >=98% loading reliability on sonnet/opus.
+- **Knowledge domain content restructure.** Standardized all 10 domain rules files to a 10-section template: Guide, Domain Model, Heuristics, Anti-patterns, Procedures, Tools, Query Strategy, Safety, Quirks, Domain Deep Knowledge. Procedures use decision-tree branching with VERIFY and CROSS-DOMAIN steps.
+- Extracted deep-knowledge files for 5 large domains (network, performance, serial-device, virtual, system-profile)
+- New `/profile-system` command for hardware/distro/toolchain profiling
+- New `docs/KNOWLEDGE-DOMAINS.md` — authoritative guide for building domain knowledge files
+- SKILL.md restructured: Stu persona, decision flow with routing table, global procedures (troubleshooting, privilege handling, loop detection, destructive ops, cross-domain investigation), global rules, environment memory guidance
+- Environment Memory section teaches Stu to use Claude's memory system for user-specific context
+
 ## 1.0.1 — 2026-03-12
 
 - Fixed tool discovery PATH: `tool_check.py` now searches `/sbin/`, `/usr/sbin/`, `/usr/local/sbin/`, `/usr/local/bin/` beyond inherited PATH

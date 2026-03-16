@@ -14,19 +14,19 @@
 
 **1. What is Stuart?**
 
-Stuart is a Claude Code plugin that transforms Claude into a sysops team leader named Stu. Stu has specialist sub-agents who handle Linux and container administration using 120 purpose-built MCP tools. You talk to Stu; he triages, investigates, and reports back.
+Stuart is a Claude Code plugin that transforms Claude into a sysadmin named Stu. Stu has domain skills and 120 purpose-built MCP tools covering Linux and container administration. You talk to Stu; he loads the right domain knowledge, investigates using structured tools, and reports back.
 
 **2. Is it safe?**
 
 Stuart ships with a read-only default posture. MCP tools query system state — they don't modify it. No packages are installed, no services restarted, no configs changed by default. Bash commands (which could modify things) require your explicit approval every time.
 
-That said, agents are powerful tools. Stuart sends system information (logs, process lists, disk info) to Anthropic's API as part of the conversation. Review [Anthropic's privacy policy](https://www.anthropic.com/privacy) and [SECURITY.md](SECURITY.md) for full details.
+That said, Stuart sends system information (logs, process lists, disk info) to Anthropic's API as part of the conversation. Review [Anthropic's privacy policy](https://www.anthropic.com/privacy) and [SECURITY.md](SECURITY.md) for full details.
 
 **3. Is it free?**
 
 Stuart itself is free and open-source (MIT license). However, it requires [Claude Code](https://docs.anthropic.com/en/docs/claude-code), which requires a paid plan — the free Claude.ai plan does not include Claude Code access. Supported plans: Pro, Max, Team, Enterprise, or API (Console). Claude Code also works with third-party providers (Amazon Bedrock, Google Vertex AI, Microsoft Foundry).
 
-Stuart's token usage depends on your queries — complex investigations with specialist delegation use more tokens than simple status checks.
+Stuart's token usage depends on your queries — complex investigations across multiple domains use more tokens than simple status checks.
 
 **4. Who built this?**
 
@@ -72,13 +72,13 @@ Both. Stuart's container server auto-detects the available runtime (Docker, Podm
 
 Just talk naturally. "Hey Stu, why is my disk filling up?" or "Check my containers" or "What's going on with systemd?" Stu is designed to respond to conversational prompts, not formal command syntax.
 
-**13. What's the difference between Stu and the specialists?**
+**13. How does Stu decide what to investigate?**
 
-Stu is the team leader — he handles triage, decides what needs investigating, and presents results. When deeper domain expertise is needed, Stu delegates to a specialist sub-agent (linux-specialist, container-specialist, or distro-specialist) who has focused tools and knowledge. You always talk to Stu; you don't interact with specialists directly.
+Stu follows a 3-step decision flow: (1) answer from knowledge if no tools are needed, (2) make a quick tool call for simple checks, (3) load the relevant domain skill and investigate using MCP tools for anything more involved. For multi-domain questions, he loads multiple skills and synthesises the findings.
 
-**14. Why is delegation slow?**
+**14. Why does Stu load skills?**
 
-When Stu delegates to a specialist, the specialist runs as a sub-agent with its own tool calls and reasoning. This adds 30 seconds to several minutes depending on complexity. Stu often handles simple queries directly for speed, only delegating when deeper investigation is needed.
+Domain skills encode diagnostic workflows, tool selection strategies, and troubleshooting patterns. Without a skill, Stu would guess which tools to use and miss important investigation steps. Loading a skill ensures he follows proven patterns and uses the right MCP tools for the domain.
 
 **15. Can Stu make changes to my system?**
 
@@ -138,4 +138,4 @@ This shouldn't happen — Stu has a guardrail against modifying plugin files. If
 
 **26. Everything is slow**
 
-Specialist delegation adds latency (sub-agent round-trips). For quick queries, try being specific: "What's the status of nginx.service?" is faster than "How's my system doing?" because Stu can answer directly without delegating.
+Specific queries are faster: "What's the status of nginx.service?" can be answered with a single tool call, while "How's my system doing?" requires loading skills and investigating multiple domains. If Stu is spending too long, try narrowing the scope.
